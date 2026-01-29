@@ -350,9 +350,9 @@ void KeyFrame::UpdateConnections()
         if (pMP->isBad())
             continue;
 
-        map<KeyFrame*, size_t> observations = pMP->GetObservations();
+        std::map<KeyFrame*, size_t> observations = pMP->GetObservations();
 
-        for (map<KeyFrame*, size_t>::iterator mit = observations.begin(), mend = observations.end(); mit != mend; mit++)
+        for (std::map<KeyFrame*, size_t>::iterator mit = observations.begin(), mend = observations.end(); mit != mend; mit++)
         {
             if (mit->first->mnId == mnId)
                 continue;
@@ -372,7 +372,7 @@ void KeyFrame::UpdateConnections()
 
     vector<pair<int, KeyFrame*>> vPairs;
     vPairs.reserve(KFcounter.size());
-    for (map<KeyFrame*, int>::iterator mit = KFcounter.begin(), mend = KFcounter.end(); mit != mend; mit++)
+    for (std::map<KeyFrame*, int>::iterator mit = KFcounter.begin(), mend = KFcounter.end(); mit != mend; mit++)
     {
         if (mit->second > nmax)
         {
@@ -393,7 +393,7 @@ void KeyFrame::UpdateConnections()
     }
 
     sort(vPairs.begin(), vPairs.end());
-    list<KeyFrame*> lKFs;
+    std::list<KeyFrame*> lKFs;
     list<int> lWs;
     for (size_t i = 0; i < vPairs.size(); i++)
     {
