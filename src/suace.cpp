@@ -28,50 +28,56 @@
 
 // #include "stdafx.h"
 #include "suace.h"
-#include <opencv2/opencv.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/opencv.hpp>
 
 using namespace cv;
 using namespace std;
 
-void performSUACE(Mat & src, Mat & dst, int distance, double sigma) {
+void performSUACE(Mat& src, Mat& dst, int distance, double sigma)
+{
 
-	CV_Assert(src.type() == CV_8UC1);
-	if (!(distance > 0 && sigma > 0)) {
-		CV_Error(CV_StsBadArg, "distance and sigma must be greater 0");
-	}
-	dst = Mat(src.size(), CV_8UC1);
-	Mat smoothed;
-	int val;
-	int a, b;
-	int adjuster;
-	int half_distance = distance / 2;
-	double distance_d = distance;
+    CV_Assert(src.type() == CV_8UC1);
+    if (!(distance > 0 && sigma > 0))
+    {
+        CV_Error(cv::Error::StsBadArg, "distance and sigma must be greater 0");
+    }
+    dst = Mat(src.size(), CV_8UC1);
+    Mat smoothed;
+    int val;
+    int a, b;
+    int adjuster;
+    int half_distance = distance / 2;
+    double distance_d = distance;
 
-	GaussianBlur(src, smoothed, cv::Size(0, 0), sigma);
+    GaussianBlur(src, smoothed, cv::Size(0, 0), sigma);
 
-	for (int x = 0;x<src.cols;x++)
-		for (int y = 0;y < src.rows;y++) {
-			val = src.at<uchar>(y, x);
-			adjuster = smoothed.at<uchar>(y, x);
-			if ((val - adjuster) > distance_d)adjuster += (val - adjuster)*0.5;
-			adjuster = adjuster < half_distance ? half_distance : adjuster;
-			b = adjuster + half_distance;
-			b = b > 255 ? 255 : b;
-			a = b - distance;
-			a = a < 0 ? 0 : a;
+    for (int x = 0; x < src.cols; x++)
+        for (int y = 0; y < src.rows; y++)
+        {
+            val = src.at<uchar>(y, x);
+            adjuster = smoothed.at<uchar>(y, x);
+            if ((val - adjuster) > distance_d)
+                adjuster += (val - adjuster) * 0.5;
+            adjuster = adjuster < half_distance ? half_distance : adjuster;
+            b = adjuster + half_distance;
+            b = b > 255 ? 255 : b;
+            a = b - distance;
+            a = a < 0 ? 0 : a;
 
-			if (val >= a && val <= b)
-			{
-				dst.at<uchar>(y, x) = (int)(((val - a) / distance_d) * 255);
-			}
-			else if (val < a) {
-				dst.at<uchar>(y, x) = 0;
-			}
-			else if (val > b) {
-				dst.at<uchar>(y, x) = 255;
-			}
-		}
+            if (val >= a && val <= b)
+            {
+                dst.at<uchar>(y, x) = (int)(((val - a) / distance_d) * 255);
+            }
+            else if (val < a)
+            {
+                dst.at<uchar>(y, x) = 0;
+            }
+            else if (val > b)
+            {
+                dst.at<uchar>(y, x) = 255;
+            }
+        }
 }

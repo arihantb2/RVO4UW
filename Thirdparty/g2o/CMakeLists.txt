@@ -1,10 +1,12 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5)
 SET(CMAKE_LEGACY_CYGWIN_WIN32 0)
 
 PROJECT(g2o)
 
 SET(g2o_C_FLAGS)
 SET(g2o_CXX_FLAGS)
+
+include(GNUInstallDirs)
 
 # default built type
 IF(NOT CMAKE_BUILD_TYPE)
@@ -21,16 +23,6 @@ if(MSVC90)
   add_definitions(-DEIGEN_DONT_ALIGN_STATICALLY=1)
   message(STATUS "Disabling memory alignment for MSVC8")
 endif(MSVC90)
-
-# Set the output directory for the build executables and libraries
-IF(WIN32)
-  SET(g2o_LIBRARY_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/bin CACHE PATH "Target for the libraries")
-ELSE(WIN32)
-  SET(g2o_LIBRARY_OUTPUT_DIRECTORY ${g2o_SOURCE_DIR}/lib CACHE PATH "Target for the libraries")
-ENDIF(WIN32)
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${g2o_LIBRARY_OUTPUT_DIRECTORY})
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${g2o_RUNTIME_OUTPUT_DIRECTORY})
 
 # Set search directory for looking for our custom CMake scripts to
 # look for SuiteSparse, QGLViewer, and Eigen3.
@@ -69,7 +61,7 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
 
 # Find Eigen3
 SET(EIGEN3_INCLUDE_DIR ${G2O_EIGEN3_INCLUDE})
-FIND_PACKAGE(Eigen3 3.1.0 REQUIRED)
+FIND_PACKAGE(Eigen3 3.1.0 REQUIRED NO_MODULE)
 IF(EIGEN3_FOUND)
   SET(G2O_EIGEN3_INCLUDE ${EIGEN3_INCLUDE_DIR} CACHE PATH "Directory of Eigen3")
 ELSE(EIGEN3_FOUND)
@@ -78,14 +70,7 @@ ENDIF(EIGEN3_FOUND)
 
 # Generate config.h
 SET(G2O_CXX_COMPILER "${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER}")
-configure_file(config.h.in ${g2o_SOURCE_DIR}/config.h)
-
-# Set up the top-level include directories
-INCLUDE_DIRECTORIES(
-${g2o_SOURCE_DIR}/core
-${g2o_SOURCE_DIR}/types
-${g2o_SOURCE_DIR}/stuff 
-${G2O_EIGEN3_INCLUDE})
+configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 # Include the subdirectories
 ADD_LIBRARY(g2o ${G2O_LIB_TYPE}
@@ -173,4 +158,28 @@ g2o/stuff/os_specific.h
 g2o/stuff/string_tools.cpp
 g2o/stuff/property.cpp       
 g2o/stuff/property.h       
+)
+
+target_include_directories(g2o
+PUBLIC
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}/core>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}/types>
+  $<BUILD_INTERFACE:${g2o_SOURCE_DIR}/stuff>
+  $<BUILD_INTERFACE:${G2O_EIGEN3_INCLUDE}>
+  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+install(TARGETS g2o
+  EXPORT RVO4UWTargets
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
+install(DIRECTORY g2o
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+  FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp"
+)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.h
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )

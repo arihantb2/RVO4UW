@@ -21,13 +21,11 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "MapPoint.h"
-#include "KeyFrame.h"
 #include <set>
+#include "KeyFrame.h"
+#include "MapPoint.h"
 
 #include <mutex>
-
-
 
 namespace ORB_SLAM2
 {
@@ -44,7 +42,7 @@ public:
     void AddMapPoint(MapPoint* pMP);
     void EraseMapPoint(MapPoint* pMP);
     void EraseKeyFrame(KeyFrame* pKF);
-    void SetReferenceMapPoints(const std::vector<MapPoint*> &vpMPs);
+    void SetReferenceMapPoints(const std::vector<MapPoint*>& vpMPs);
     void InformNewBigChange();
     int GetLastBigChangeIdx();
 
@@ -53,7 +51,7 @@ public:
     std::vector<MapPoint*> GetReferenceMapPoints();
 
     long unsigned int MapPointsInMap();
-    long unsigned  KeyFramesInMap();
+    long unsigned KeyFramesInMap();
 
     long unsigned int GetMaxKFid();
 
@@ -80,6 +78,6 @@ protected:
     std::mutex mMutexMap;
 };
 
-} //namespace ORB_SLAM
+}  // namespace ORB_SLAM2
 
-#endif // MAP_H
+#endif  // MAP_H

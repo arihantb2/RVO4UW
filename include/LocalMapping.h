@@ -22,13 +22,12 @@
 #define LOCALMAPPING_H
 
 #include "KeyFrame.h"
-#include "Map.h"
-#include "LoopClosing.h"
-#include "Tracking.h"
 #include "KeyFrameDatabase.h"
+#include "LoopClosing.h"
+#include "Map.h"
+#include "Tracking.h"
 
 #include <mutex>
-
 
 namespace ORB_SLAM2
 {
@@ -67,13 +66,13 @@ public:
     void RequestFinish();
     bool isFinished();
 
-    int KeyframesInQueue(){
+    int KeyframesInQueue()
+    {
         unique_lock<std::mutex> lock(mMutexNewKFs);
         return mlNewKeyFrames.size();
     }
 
 protected:
-
     bool CheckNewKeyFrames();
     void ProcessNewKeyFrame();
     void CreateNewMapPoints();
@@ -83,9 +82,9 @@ protected:
 
     void KeyFrameCulling();
 
-    cv::Mat ComputeF12(KeyFrame* &pKF1, KeyFrame* &pKF2);
+    cv::Mat ComputeF12(KeyFrame*& pKF1, KeyFrame*& pKF2);
 
-    cv::Mat SkewSymmetricMatrix(const cv::Mat &v);
+    cv::Mat SkewSymmetricMatrix(const cv::Mat& v);
 
     bool mbMonocular;
 
@@ -123,6 +122,6 @@ protected:
     std::mutex mMutexAccept;
 };
 
-} //namespace ORB_SLAM
+}  // namespace ORB_SLAM2
 
-#endif // LOCALMAPPING_H
+#endif  // LOCALMAPPING_H

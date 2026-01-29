@@ -18,22 +18,21 @@
 * along with ORB-SLAM2. If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include<string>
-#include<thread>
-#include<opencv2/core/core.hpp>
+#include <opencv2/core/core.hpp>
+#include <string>
+#include <thread>
 
-#include "Tracking.h"
 #include "FrameDrawer.h"
-#include "MapDrawer.h"
-#include "Map.h"
+#include "KeyFrameDatabase.h"
 #include "LocalMapping.h"
 #include "LoopClosing.h"
-#include "KeyFrameDatabase.h"
+#include "Map.h"
+#include "MapDrawer.h"
 #include "ORBVocabulary.h"
+#include "Tracking.h"
 #include "Viewer.h"
 
 namespace ORB_SLAM2
@@ -50,32 +49,32 @@ class System
 {
 public:
     // Input sensor
-    enum eSensor{
-        MONOCULAR=0,
-        STEREO=1,
-        RGBD=2
+    enum eSensor
+    {
+        MONOCULAR = 0,
+        STEREO = 1,
+        RGBD = 2
     };
 
 public:
-
     // Initialize the SLAM system. It launches the Local Mapping, Loop Closing and Viewer threads.
-    System(const string &strVocFile, const string &strSettingsFile, const eSensor sensor, const bool bUseViewer = true);
+    System(const string& strVocFile, const string& strSettingsFile, const eSensor sensor, const bool bUseViewer = true);
 
     // Proccess the given stereo frame. Images must be synchronized and rectified.
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
-    cv::Mat TrackStereo(const cv::Mat &imLeft, const cv::Mat &imRight, const double &timestamp);
+    cv::Mat TrackStereo(const cv::Mat& imLeft, const cv::Mat& imRight, const double& timestamp);
 
     // Process the given rgbd frame. Depthmap must be registered to the RGB frame.
     // Input image: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Input depthmap: Float (CV_32F).
     // Returns the camera pose (empty if tracking fails).
-    cv::Mat TrackRGBD(const cv::Mat &im, const cv::Mat &depthmap, const double &timestamp);
+    cv::Mat TrackRGBD(const cv::Mat& im, const cv::Mat& depthmap, const double& timestamp);
 
     // Proccess the given monocular frame
     // Input images: RGB (CV_8UC3) or grayscale (CV_8U). RGB is converted to grayscale.
     // Returns the camera pose (empty if tracking fails).
-    cv::Mat TrackMonocular(const cv::Mat &im, const double &timestamp);
+    cv::Mat TrackMonocular(const cv::Mat& im, const double& timestamp);
 
     // This stops local mapping thread (map building) and performs only camera tracking.
     void ActivateLocalizationMode();
@@ -98,19 +97,19 @@ public:
     // Only for stereo and RGB-D. This method does not work for monocular.
     // Call first Shutdown()
     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
-    void SaveTrajectoryTUM(const string &filename);
+    void SaveTrajectoryTUM(const string& filename);
 
     // Save keyframe poses in the TUM RGB-D dataset format.
     // This method works for all sensor input.
     // Call first Shutdown()
     // See format details at: http://vision.in.tum.de/data/datasets/rgbd-dataset
-    void SaveKeyFrameTrajectoryTUM(const string &filename);
+    void SaveKeyFrameTrajectoryTUM(const string& filename);
 
     // Save camera trajectory in the KITTI dataset format.
     // Only for stereo and RGB-D. This method does not work for monocular.
     // Call first Shutdown()
     // See format details at: http://www.cvlibs.net/datasets/kitti/eval_odometry.php
-    void SaveTrajectoryKITTI(const string &filename);
+    void SaveTrajectoryKITTI(const string& filename);
 
     // TODO: Save/Load functions
     // SaveMap(const string &filename);
@@ -125,7 +124,6 @@ public:
     void StartViewer();
 
 private:
-
     // Input sensor
     eSensor mSensor;
 
@@ -178,6 +176,6 @@ private:
     std::mutex mMutexState;
 };
 
-}// namespace ORB_SLAM
+}  // namespace ORB_SLAM2
 
-#endif // SYSTEM_H
+#endif  // SYSTEM_H
